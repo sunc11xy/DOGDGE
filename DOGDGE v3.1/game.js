@@ -55,13 +55,15 @@ const LEADERBOARD_ENTRIES = [
   { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
 ];
 
-// Thank You Names Section (safe to edit this list)
+// Thank you section
 const THANK_YOU_NAMES = [
-  "Justin Sunchen",
+  "Developer: Justin SUNCHEN + CHATGPT",
+  "Players",
   "Ryo Shoji",
-  "Friends and Players",
-  "Dogdge Community",
-  "You",
+  "Alem Memesh",
+  "Jessica Liu",
+  "Emmanuel Benedict",
+  "Tbc...",
 ];
 
 const LEVELS = {
