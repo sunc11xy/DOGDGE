@@ -1,18 +1,21 @@
-# dogdge
+# DOGDGE
 
-A tiny browser game: move the square and dodge falling blocks.
-
-## Run
-Open `OPENME.html` in a browser, I've only tested on Chrome, so...'
-
-## Controls
-- Arrow keys or WASD: move
-- `Start / Restart` button: begin a run
-- `Music` button: toggle background music playback
-
-## Music File
-Place a file named `spaghetti.mp3` in this folder (`neon-dodge/spaghetti.mp3`) for the music toggle to play it. I've put AOA's song, u can put sth else''
+A tiny HTML dodge obstacle browser game! Try it out now...
 
 ## Contact
-Find me in my room if you have question...
+Find me in my room or via sunchxy@gmail.com if you have any questions or suggestions.
 
+## Leaderboard
+The online leaderboard is currently under construction. Below is an irregularly updated offline leaderboard:
+
+1. Ryo Shoji
+   - 25 Points Total 
+   Completion: (MiniSkirt - AOA 5/5 Revivals used) 
+3. N/A
+4. N/A
+5. N/A
+6. N/A
+
+Note: Point given is calculated based on
+100*((n-1)*100)-(15r)
+where n is the level of the game, r is the number of revivals used. 
