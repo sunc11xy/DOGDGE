@@ -48,8 +48,8 @@ const DEFAULT_EVENT_GAP_MAX = 42;
 
 // Leaderboard Adjustment Section (Do not change anything else)
 const LEADERBOARD_ENTRIES = [
-  { name: "Ryo Shoji", point: 25, completionLevels: "MiniSkirt - AOA - 5/5 Revivals" },
-  { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
+  { name: "Justin SUNCHEN", point: 40, completionLevels: "MiniSkirt-AOA--4/5 Revivals" },
+  { name: "Ryo Shoji", point: 25, completionLevels: "MiniSkirt-AOA--5/5 Revivals" },
   { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
   { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
   { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
