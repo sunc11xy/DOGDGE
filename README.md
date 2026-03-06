@@ -1,4 +1,4 @@
-# DOGDGE
+# DOG-Duh
 
 A tiny HTML dodge obstacle browser game! Try it out now...
 https://sunc11xy.github.io/DOGDGE/DOGDGE%20v3.1/
