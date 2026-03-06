@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dogdge</title>
+    <title>DOG Duh</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -17,18 +17,9 @@
     </div>
     <div id="leaderboardModal" class="modal hidden">
       <div class="modal-card">
-        <h2>Leaderboard (Top 5)</h2>
+        <h2 id="leaderboardTitle">Leaderboard (Top 5)</h2>
         <ul id="leaderboardList"></ul>
         <button id="closeLeaderboardBtn">Close</button>
-      </div>
-    </div>
-    <div id="thanksModal" class="modal hidden">
-      <div class="modal-card thanks-card">
-        <h2>Thank You</h2>
-        <div class="thanks-roll-wrap">
-          <ul id="thanksList" class="thanks-roll"></ul>
-        </div>
-        <button id="closeThanksBtn">Close</button>
       </div>
     </div>
 
@@ -39,47 +30,77 @@
 
     <main class="layout">
       <section class="hud">
-        <h1>dogdge</h1>
-        <p>Move with WASD or with arrows. Survive as long as possible.</p>
-        <label for="levelSelect">Level</label>
+        <h1 id="gameTitle">DOG Duh</h1>
+        <p id="gameSubtitle">Move with WASD or with arrows. Survive as long as possible.</p>
+
+        <label id="levelSelectLabel" for="levelSelect">Level</label>
         <select id="levelSelect">
           <option value="spaghetti">Level 1 - MiniSkirt</option>
           <option value="chu">Level 2 - Chu</option>
           <option value="rude">Level 3 - RUDE!</option>
         </select>
+
+        <label id="langSelectLabel" for="langSelect">Language</label>
+        <select id="langSelect">
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+        </select>
+
         <div class="customize-panel">
-          <div class="customize-title">Customize</div>
+          <div id="customizeTitle" class="customize-title">Customize</div>
+          <div class="player-shape-row">
+            <label id="playerShapeLabel" for="playerShapeSelect">Player Shape</label>
+            <select id="playerShapeSelect">
+              <option value="square">Square</option>
+              <option value="pentagon">Pentagon</option>
+              <option value="circle">Circle</option>
+              <option value="triangle">Triangle</option>
+              <option value="diamond">Diamond</option>
+            </select>
+          </div>
           <div class="player-color-row">
-            <label for="playerColorPicker">Player Color</label>
+            <label id="playerColorLabel" for="playerColorPicker">Player Color</label>
             <input id="playerColorPicker" type="color" value="#f2f2f2" aria-label="Choose player color" />
           </div>
           <div class="player-frame-row">
-            <label for="playerFramePicker">Player Frame</label>
+            <label id="playerFrameLabel" for="playerFramePicker">Player Frame</label>
             <input id="playerFramePicker" type="color" value="#111111" aria-label="Choose player frame color" />
           </div>
           <div class="level3-custom-grid">
             <div class="obstacle-color-row">
-              <label for="obstacleColorPicker">Obstacle Color</label>
+              <label id="obstacleColorLabel" for="obstacleColorPicker">Obstacle Color</label>
               <input id="obstacleColorPicker" type="color" value="#ffffff" aria-label="Choose obstacle color" />
             </div>
             <div class="obstacle-frame-row">
-              <label for="obstacleFramePicker">Obstacle Frame</label>
+              <label id="obstacleFrameLabel" for="obstacleFramePicker">Obstacle Frame</label>
               <input id="obstacleFramePicker" type="color" value="#ff69b4" aria-label="Choose obstacle frame color" />
             </div>
           </div>
         </div>
+
         <div class="stats">
-          <span>Score: <strong id="score">0</strong></span>
-          <span>Best: <strong id="best">0</strong></span>
-          <span>Revives: <strong id="revives">5</strong></span>
+          <span id="scoreLabel"><span id="scoreText">Score:</span> <strong id="score">0</strong></span>
+          <span id="bestLabel"><span id="bestText">Best:</span> <strong id="best">0</strong></span>
+          <span id="revivesLabel"><span id="revivesText">Revives:</span> <strong id="revives">5</strong></span>
         </div>
-        <button id="leaderboardBtn">Leaderboard</button>
-        <button id="thanksBtn">Thank You</button>
+        <div class="code-panel">
+          <div class="code-head">
+            <div class="code-tabs">
+              <span class="code-tab active">game.js</span>
+            </div>
+          </div>
+          <div id="codePanelTitle" class="code-title">Config Console</div>
+          <div id="codeLog" class="code-log"></div>
+        </div>
+        <div class="quick-row">
+          <button id="leaderboardBtn">Leaderboard</button>
+          <a id="changelogBtn" class="link-btn" href="./changelog.html" target="_blank" rel="noopener noreferrer">Changelog</a>
+        </div>
         <button id="startBtn">Start / Restart</button>
         <button id="continueBtn" hidden>Revive</button>
         <button id="pauseBtn">Pause</button>
       </section>
-      <canvas id="game" width="520" height="680" aria-label="dogdge game canvas"></canvas>
+      <canvas id="game" width="520" height="680" aria-label="DOG Duh game canvas"></canvas>
     </main>
     <script src="./game.js"></script>
   </body>

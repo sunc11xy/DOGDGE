@@ -8,14 +8,16 @@ const sideScoreEl = document.getElementById("sideScore");
 const recordBadgeEl = document.getElementById("recordBadge");
 const celebrateBtn = document.getElementById("celebrateBtn");
 const leaderboardBtn = document.getElementById("leaderboardBtn");
-const thanksBtn = document.getElementById("thanksBtn");
+const changelogBtn = document.getElementById("changelogBtn");
 const hudEl = document.querySelector(".hud");
 const levelSelect = document.getElementById("levelSelect");
+const langSelect = document.getElementById("langSelect");
 const startBtn = document.getElementById("startBtn");
 const reviveBtn = document.getElementById("continueBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const playerColorPicker = document.getElementById("playerColorPicker");
 const playerFramePicker = document.getElementById("playerFramePicker");
+const playerShapeSelect = document.getElementById("playerShapeSelect");
 const obstacleColorPicker = document.getElementById("obstacleColorPicker");
 const obstacleFramePicker = document.getElementById("obstacleFramePicker");
 const obstacleColorRow = document.querySelector(".obstacle-color-row");
@@ -25,12 +27,28 @@ const closeModalBtn = document.getElementById("closeModalBtn");
 const leaderboardModal = document.getElementById("leaderboardModal");
 const closeLeaderboardBtn = document.getElementById("closeLeaderboardBtn");
 const leaderboardListEl = document.getElementById("leaderboardList");
-const thanksModal = document.getElementById("thanksModal");
-const closeThanksBtn = document.getElementById("closeThanksBtn");
-const thanksListEl = document.getElementById("thanksList");
 const levelInfoTitleEl = document.getElementById("levelInfoTitle");
 const levelInfoSummaryEl = document.getElementById("levelInfoSummary");
 const levelInfoListEl = document.getElementById("levelInfoList");
+const gameTitleEl = document.getElementById("gameTitle");
+const gameSubtitleEl = document.getElementById("gameSubtitle");
+const levelSelectLabelEl = document.getElementById("levelSelectLabel");
+const langSelectLabelEl = document.getElementById("langSelectLabel");
+const customizeTitleEl = document.getElementById("customizeTitle");
+const playerColorLabelEl = document.getElementById("playerColorLabel");
+const playerFrameLabelEl = document.getElementById("playerFrameLabel");
+const playerShapeLabelEl = document.getElementById("playerShapeLabel");
+const obstacleColorLabelEl = document.getElementById("obstacleColorLabel");
+const obstacleFrameLabelEl = document.getElementById("obstacleFrameLabel");
+const scoreLabelEl = document.getElementById("scoreLabel");
+const bestLabelEl = document.getElementById("bestLabel");
+const revivesLabelEl = document.getElementById("revivesLabel");
+const scoreTextEl = document.getElementById("scoreText");
+const bestTextEl = document.getElementById("bestText");
+const revivesTextEl = document.getElementById("revivesText");
+const leaderboardTitleEl = document.getElementById("leaderboardTitle");
+const codePanelTitleEl = document.getElementById("codePanelTitle");
+const codeLogEl = document.getElementById("codeLog");
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
@@ -45,6 +63,145 @@ const WARNING_SECONDS = 3;
 const DEFAULT_EVENT_TARGET_COUNT = 7;
 const DEFAULT_EVENT_GAP_MIN = 20;
 const DEFAULT_EVENT_GAP_MAX = 42;
+// Position controls for the Level 3 start prompt.
+const LEVEL3_START_PROMPT_OFFSET_X = 0;
+const LEVEL3_START_PROMPT_OFFSET_Y = 155;
+const OVERLAY_TYPE_MS_PER_CHAR = 42;
+const MODAL_TRANSITION_MS = 220;
+const CODE_LOG_MAX_LINES = 14;
+const LANGUAGES = ["en", "zh"];
+const I18N = {
+  en: {
+    gameTitle: "DOG Duh",
+    subtitle: "Move with WASD or with arrows. Survive as long as possible.",
+    level: "Level",
+    language: "Language",
+    customize: "Customize",
+    playerColor: "Player Color",
+    playerFrame: "Player Frame",
+    playerShape: "Player Shape",
+    playerShapeSquare: "Square",
+    playerShapePentagon: "Pentagon",
+    playerShapeCircle: "Circle",
+    playerShapeTriangle: "Triangle",
+    playerShapeDiamond: "Diamond",
+    obstacleColor: "Obstacle Color",
+    obstacleFrame: "Obstacle Frame",
+    score: "Score",
+    best: "Best",
+    revives: "Revives",
+    codePanelTitle: "Config Console",
+    leaderboardBtn: "Leaderboard",
+    changelogBtn: "Changelog",
+    startBtn: "Start / Restart",
+    reviveBtn: "Revive",
+    pause: "Pause",
+    resume: "Resume",
+    close: "Close",
+    understand: "I understand",
+    celebrateAgain: "Celebrate Again",
+    leaderboardTitle: "Leaderboard (Top 5)",
+    level1Label: "Level 1 - MiniSkirt",
+    level2Label: "Level 2 - Chu",
+    level3Label: "Level 3 - RUDE!",
+    level1Title: "Level 1 - MiniSkirt",
+    level2Title: "Level 2 - Chu",
+    level3Title: "Level 3 - RUDE!",
+    surviveFor: "Survive for {duration}.",
+    level1Bullet1: "Obstacle flow: top to bottom.",
+    level1Bullet2: "BLIND events: yes (with 3-second warning).",
+    level1Bullet3: "BLIND duration shrinks as speed increases.",
+    level2Bullet1: "Obstacle flow starts left-to-right only.",
+    level2Bullet2: "Random REVERSE events switch direction to right-to-left (and back).",
+    level2Bullet3: "No color reverse.",
+    level3Bullet1: "No BLIND and no REVERSE.",
+    level3Bullet2: "Direction phases switch over time, with 3-second switch warnings.",
+    level3Bullet3: "No BLANK and no half-screen effects.",
+    invincible: "INVINCIBLE",
+    switchingIn: "SWITCHING IN {value}s",
+    blind: "BLIND",
+    blindIn: "BLIND IN {value}s",
+    reverseNow: "REVERSE!",
+    reverseIn: "REVERSE IN {value}s",
+    paused: "Paused",
+    pressSpaceContinue: "Press Space to continue",
+    pressToStart: "press to start",
+    gameOver: "Game Over",
+    gameOverWithRevive: "Press Start to restart or C to revive",
+    gameOverNoRevive: "Press Start to try again",
+    youWin: "YOU WIN",
+    accomplished: "you've accomplished",
+    firstPlayer: "{date} - First Player to Complete",
+    revivesUsed: "Revivals used: {used} / {max}",
+    secretComboHint: "Secret: Hold Shift + type D O G before start",
+    newRecord: "NEW RECORD!",
+  },
+  zh: {
+    gameTitle: "DOG Duh",
+    subtitle: "用 WASD 或方向键移动，尽可能久地生存。",
+    level: "关卡",
+    language: "语言",
+    customize: "自定义",
+    playerColor: "玩家颜色",
+    playerFrame: "玩家边框",
+    playerShape: "玩家形状",
+    playerShapeSquare: "正方形",
+    playerShapePentagon: "五边形",
+    playerShapeCircle: "圆形",
+    playerShapeTriangle: "三角形",
+    playerShapeDiamond: "菱形",
+    obstacleColor: "障碍颜色",
+    obstacleFrame: "障碍边框",
+    score: "分数",
+    best: "最佳",
+    revives: "复活",
+    codePanelTitle: "配置控制台",
+    leaderboardBtn: "排行榜",
+    changelogBtn: "更新日志",
+    startBtn: "开始 / 重开",
+    reviveBtn: "复活",
+    pause: "暂停",
+    resume: "继续",
+    close: "关闭",
+    understand: "我知道了",
+    celebrateAgain: "再庆祝一次",
+    leaderboardTitle: "排行榜（前 5）",
+    level1Label: "第 1 关 - MiniSkirt",
+    level2Label: "第 2 关 - Chu",
+    level3Label: "第 3 关 - RUDE!",
+    level1Title: "第 1 关 - MiniSkirt",
+    level2Title: "第 2 关 - Chu",
+    level3Title: "第 3 关 - RUDE!",
+    surviveFor: "生存 {duration}。",
+    level1Bullet1: "障碍方向：由上到下。",
+    level1Bullet2: "有 BLIND（提前 3 秒预警）。",
+    level1Bullet3: "随着速度提升，BLIND 时间会缩短。",
+    level2Bullet1: "障碍先只从左往右。",
+    level2Bullet2: "会随机触发 REVERSE，切换为右往左（再切回）。",
+    level2Bullet3: "不再有颜色反转。",
+    level3Bullet1: "没有 BLIND，也没有 REVERSE。",
+    level3Bullet2: "方向会分阶段切换，并提前 3 秒提示。",
+    level3Bullet3: "没有 BLANK，也没有半屏效果。",
+    invincible: "无敌中",
+    switchingIn: "{value}s 后切换",
+    blind: "BLIND",
+    blindIn: "{value}s 后 BLIND",
+    reverseNow: "反转！",
+    reverseIn: "{value}s 后反转",
+    paused: "已暂停",
+    pressSpaceContinue: "按空格继续",
+    pressToStart: "按空格开始",
+    gameOver: "游戏结束",
+    gameOverWithRevive: "按开始重开，或按 C 复活",
+    gameOverNoRevive: "按开始再来一次",
+    youWin: "你赢了",
+    accomplished: "你已完成",
+    firstPlayer: "{date} - First Player to Complete",
+    revivesUsed: "复活使用：{used} / {max}",
+    secretComboHint: "隐藏：开始前按住 Shift 并输入 D O G",
+    newRecord: "新纪录！",
+  },
+};
 
 // Leaderboard Adjustment Section (Do not change anything else)
 const LEADERBOARD_ENTRIES = [
@@ -55,22 +212,12 @@ const LEADERBOARD_ENTRIES = [
   { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
 ];
 
-// Thank you section
-const THANK_YOU_NAMES = [
-  "Developer: Justin SUNCHEN + CHATGPT",
-  "Players",
-  "Ryo Shoji",
-  "Alem Memesh",
-  "Jessica Liu",
-  "Emmanuel Benedict",
-  "Tbc...",
-];
-
 const LEVELS = {
   spaghetti: {
     key: "spaghetti",
     label: "Level 1 - MiniSkirt",
     songLabel: "MINISKIRT - AOA",
+    promptLabel: "MINISKIRT",
     audioSrc: "./spaghetti.mp3",
     audioStart: 15,
     audioEnd: 3 * 60 + 15,
@@ -96,6 +243,7 @@ const LEVELS = {
     key: "chu",
     label: "Level 2 - Chu",
     songLabel: "Chu - f(x) (Karina/Winter/Seulgi/Irene)",
+    promptLabel: "Chu",
     audioSrc: "./Chu.mp3",
     audioStart: 26,
     audioEnd: 3 * 60 + 38,
@@ -105,18 +253,6 @@ const LEVELS = {
     eventTargetCount: 10,
     eventGapMin: 14,
     eventGapMax: 28,
-    colorSwapWarning: 0.5,
-    colorSwapWindows: [
-      [11, 12],
-      [53, 54],
-      [64, 65],
-      [100, 101],
-      [108, 109],
-      [165, 166],
-      [173, 174],
-      [184, 185],
-      [189, 190],
-    ],
     playerSpeedMult: 1.2,
     spawnRateMult: 0.84,
     hazardCountMult: 0.82,
@@ -131,6 +267,7 @@ const LEVELS = {
     key: "rude",
     label: "Level 3 - RUDE!",
     songLabel: "RUDE! - Heart2Heart",
+    promptLabel: "RUDE!",
     audioSrc: "./Rude.mp3",
     audioStart: 0,
     audioEnd: null,
@@ -159,6 +296,7 @@ const LEVELS = {
 
 const state = {
   running: false,
+  lang: "en",
   over: false,
   paused: false,
   won: false,
@@ -189,11 +327,35 @@ const state = {
   bgVideo: null,
   playerColor: null,
   playerFrameColor: null,
+  playerShape: "square",
+  dogMode: false,
+  dogComboBuffer: "",
+  dogComboLastAt: 0,
   level3ObstacleColor: null,
   level3ObstacleFrame: null,
   player: { x: canvas.width / 2 - 16, y: canvas.height - 90, w: 32, h: 32, speed: 290 },
   hazards: [],
   keys: new Set(),
+  codeLogLines: [],
+  codeLogQueue: [],
+  codeTyping: false,
+  leaderboardTypingRun: 0,
+  leaderboardConfettiRaf: null,
+  leaderboardConfettiCanvas: null,
+  leaderboardConfettiParticles: [],
+  leaderboardConfettiStopTimeout: null,
+  startPromptTarget: "",
+  startPromptDisplay: "",
+  startPromptIndex: 0,
+  startPromptTimer: 0,
+  pauseTypedStartMs: 0,
+  gameOverTypedStartMs: 0,
+  winConfettiUntilMs: 0,
+  hudDrag: {
+    active: false,
+    offsetX: 0,
+    offsetY: 0,
+  },
   levelInfoShown: {
     spaghetti: false,
     chu: false,
@@ -203,6 +365,224 @@ const state = {
 
 function getLevel() {
   return LEVELS[state.level];
+}
+
+function t(key, params = {}) {
+  const lang = LANGUAGES.includes(state.lang) ? state.lang : "en";
+  const dict = I18N[lang] || I18N.en;
+  const fallback = I18N.en[key] || key;
+  const template = dict[key] || fallback;
+  return template.replace(/\{(\w+)\}/g, (_, name) => {
+    if (Object.prototype.hasOwnProperty.call(params, name)) return String(params[name]);
+    return `{${name}}`;
+  });
+}
+
+function setPauseButtonLabel() {
+  if (!pauseBtn) return;
+  pauseBtn.textContent = state.paused ? t("resume") : t("pause");
+}
+
+function getPromptColor(levelKey) {
+  if (levelKey === "chu") return "#000000";
+  if (levelKey === "rude") return "#000000";
+  return "#f2f2f2";
+}
+
+function getPauseGameOverColor(levelKey) {
+  if (levelKey === "chu" || levelKey === "rude") return "#ffffff";
+  return "#f2f2f2";
+}
+
+function updateStatsLabels() {
+  if (scoreTextEl) scoreTextEl.textContent = `${t("score")}:`;
+  if (bestTextEl) bestTextEl.textContent = `${t("best")}:`;
+  if (revivesTextEl) revivesTextEl.textContent = `${t("revives")}:`;
+}
+
+function syncPlayerShapeSelect() {
+  if (!playerShapeSelect) return;
+  playerShapeSelect.value = state.playerShape || "square";
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function syntaxHighlight(line) {
+  const raw = String(line || "");
+  if (raw.trimStart().startsWith("//")) {
+    return `<span class="tok-comment">${escapeHtml(raw)}</span>`;
+  }
+
+  let html = escapeHtml(raw);
+  html = html.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, '<span class="tok-str">$1</span>');
+  html = html.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="tok-num">$1</span>');
+  html = html.replace(/\b(const|let|var|return|if|else|true|false|null)\b/g, '<span class="tok-key">$1</span>');
+  html = html.replace(/\b([A-Za-z_$][\w$]*)\s*(?=\()/g, '<span class="tok-fn">$1</span>');
+  html = html.replace(/\b([A-Za-z_$][\w$]*)\s*(?==)/g, '<span class="tok-prop">$1</span>');
+  return html;
+}
+
+function renderCodeLog() {
+  if (!codeLogEl) return;
+  codeLogEl.innerHTML = state.codeLogLines
+    .map(
+      (line, idx) =>
+        `<div class="code-line"><span class="code-ln">${idx + 1}</span><span class="code-code">${syntaxHighlight(line)}</span></div>`
+    )
+    .join("");
+  codeLogEl.scrollTop = codeLogEl.scrollHeight;
+}
+
+function typeNextCodeLine() {
+  if (!codeLogEl) return;
+  if (state.codeTyping) return;
+  if (state.codeLogQueue.length === 0) return;
+
+  const fullLine = state.codeLogQueue.shift();
+  let idx = 0;
+  state.codeTyping = true;
+  state.codeLogLines.push("");
+  if (state.codeLogLines.length > CODE_LOG_MAX_LINES) {
+    state.codeLogLines = state.codeLogLines.slice(-CODE_LOG_MAX_LINES);
+  }
+  renderCodeLog();
+
+  const tick = () => {
+    idx += 1;
+    state.codeLogLines[state.codeLogLines.length - 1] = fullLine.slice(0, idx);
+    renderCodeLog();
+    if (idx < fullLine.length) {
+      window.setTimeout(tick, 10);
+      return;
+    }
+    state.codeTyping = false;
+    window.setTimeout(typeNextCodeLine, 80);
+  };
+  window.setTimeout(tick, 10);
+}
+
+function pushCodeLog(command, detail = "") {
+  const stamp = new Date().toLocaleTimeString([], { hour12: false });
+  const cmd = command.trim().endsWith(";") ? command.trim() : `${command.trim()};`;
+  state.codeLogQueue.push(`// ${stamp}`);
+  state.codeLogQueue.push(cmd);
+  if (detail) state.codeLogQueue.push(`// ${detail}`);
+  typeNextCodeLine();
+}
+
+function initCodeLog() {
+  if (!codeLogEl || state.codeLogLines.length > 0 || state.codeLogQueue.length > 0) return;
+  pushCodeLog("dog_duh.init()", `level=${state.level}, lang=${state.lang}`);
+}
+
+function isStartPromptBlocked() {
+  return Boolean(blindInfoModal && !blindInfoModal.classList.contains("hidden"));
+}
+
+function getStartPromptText() {
+  const cfg = getLevel();
+  const song = cfg.promptLabel || cfg.songLabel || "Song";
+  if (cfg.key === "rude") return "RUDE";
+  if (state.lang === "zh") return `${song}，${t("pressToStart")}`;
+  return `${song}, ${t("pressToStart")}`;
+}
+
+function resetStartPromptTyping() {
+  state.startPromptTarget = getStartPromptText();
+  state.startPromptDisplay = "";
+  state.startPromptIndex = 0;
+  state.startPromptTimer = 0;
+}
+
+function updateStartPromptTyping(dt) {
+  if (state.running || state.over || state.won) return;
+  if (isStartPromptBlocked()) return;
+  if (!state.startPromptTarget) state.startPromptTarget = getStartPromptText();
+
+  const step = 0.042;
+  state.startPromptTimer += dt;
+  while (state.startPromptTimer >= step && state.startPromptIndex < state.startPromptTarget.length) {
+    state.startPromptTimer -= step;
+    state.startPromptIndex += 1;
+    state.startPromptDisplay = state.startPromptTarget.slice(0, state.startPromptIndex);
+  }
+}
+
+function getTypedLineState(text, startMs, offsetMs = 0) {
+  const total = String(text || "");
+  const elapsed = Math.max(0, performance.now() - startMs - offsetMs);
+  const maxChars = Math.min(total.length, Math.floor(elapsed / OVERLAY_TYPE_MS_PER_CHAR));
+  return {
+    shown: total.slice(0, maxChars),
+    done: maxChars >= total.length,
+  };
+}
+
+function drawTypedCenteredLine(text, y, color, font, startMs, offsetMs = 0) {
+  const target = String(text || "");
+  const { shown } = getTypedLineState(target, startMs, offsetMs);
+  ctx.fillStyle = color;
+  ctx.font = font;
+  const fullWidth = ctx.measureText(`${target} _`).width;
+  const startX = canvas.width / 2 - fullWidth / 2;
+  ctx.textAlign = "left";
+  ctx.fillText(shown, startX, y);
+  if (Math.floor(performance.now() / 420) % 2 === 0) {
+    const cursorX = startX + ctx.measureText(shown).width;
+    ctx.fillText(" _", cursorX, y);
+  }
+}
+
+function applyLanguage() {
+  if (gameTitleEl) gameTitleEl.textContent = t("gameTitle");
+  if (gameSubtitleEl) gameSubtitleEl.textContent = t("subtitle");
+  if (levelSelectLabelEl) levelSelectLabelEl.textContent = t("level");
+  if (langSelectLabelEl) langSelectLabelEl.textContent = t("language");
+  if (customizeTitleEl) customizeTitleEl.textContent = t("customize");
+  if (playerColorLabelEl) playerColorLabelEl.textContent = t("playerColor");
+  if (playerFrameLabelEl) playerFrameLabelEl.textContent = t("playerFrame");
+  if (playerShapeLabelEl) playerShapeLabelEl.textContent = t("playerShape");
+  if (obstacleColorLabelEl) obstacleColorLabelEl.textContent = t("obstacleColor");
+  if (obstacleFrameLabelEl) obstacleFrameLabelEl.textContent = t("obstacleFrame");
+  if (leaderboardBtn) leaderboardBtn.textContent = t("leaderboardBtn");
+  if (changelogBtn) changelogBtn.textContent = t("changelogBtn");
+  if (startBtn) startBtn.textContent = t("startBtn");
+  if (reviveBtn) reviveBtn.textContent = t("reviveBtn");
+  if (celebrateBtn) celebrateBtn.textContent = t("celebrateAgain");
+  if (closeModalBtn) closeModalBtn.textContent = t("understand");
+  if (closeLeaderboardBtn) closeLeaderboardBtn.textContent = t("close");
+  if (leaderboardTitleEl) leaderboardTitleEl.textContent = t("leaderboardTitle");
+  if (codePanelTitleEl) codePanelTitleEl.textContent = t("codePanelTitle");
+  if (recordBadgeEl) recordBadgeEl.textContent = t("newRecord");
+
+  if (levelSelect && levelSelect.options.length >= 3) {
+    levelSelect.options[0].textContent = t("level1Label");
+    levelSelect.options[1].textContent = t("level2Label");
+    levelSelect.options[2].textContent = t("level3Label");
+  }
+  if (playerShapeSelect && playerShapeSelect.options.length >= 5) {
+    playerShapeSelect.options[0].textContent = t("playerShapeSquare");
+    playerShapeSelect.options[1].textContent = t("playerShapePentagon");
+    playerShapeSelect.options[2].textContent = t("playerShapeCircle");
+    playerShapeSelect.options[3].textContent = t("playerShapeTriangle");
+    playerShapeSelect.options[4].textContent = t("playerShapeDiamond");
+  }
+
+  updateStatsLabels();
+  setPauseButtonLabel();
+  syncPlayerShapeSelect();
+  if (!state.running && !state.over && !state.won) {
+    state.startPromptTarget = getStartPromptText();
+    if (state.startPromptDisplay.length > state.startPromptTarget.length) {
+      state.startPromptDisplay = state.startPromptTarget;
+      state.startPromptIndex = state.startPromptTarget.length;
+    }
+  }
 }
 
 function getPlayerFillColor() {
@@ -244,59 +624,186 @@ function withAlpha(hexColor, alpha) {
 }
 
 function updateLevelScopedControls() {
-  const showLevel3Controls = state.level === "rude";
-  if (obstacleColorRow) obstacleColorRow.hidden = !showLevel3Controls;
-  if (obstacleFrameRow) obstacleFrameRow.hidden = !showLevel3Controls;
+  if (obstacleColorRow) obstacleColorRow.hidden = false;
+  if (obstacleFrameRow) obstacleFrameRow.hidden = false;
 }
 
 function syncObstaclePickers() {
-  if (obstacleColorPicker) obstacleColorPicker.value = state.level3ObstacleColor || "#ffffff";
-  if (obstacleFramePicker) obstacleFramePicker.value = state.level3ObstacleFrame || "#ff69b4";
+  const cfg = getLevel();
+  if (obstacleColorPicker) {
+    obstacleColorPicker.value = state.level3ObstacleColor || (cfg.key === "chu" ? "#000000" : "#ffffff");
+  }
+  if (obstacleFramePicker) {
+    obstacleFramePicker.value = state.level3ObstacleFrame || (cfg.key === "chu" ? "#2d2d2d" : "#ff69b4");
+  }
 }
 
-function renderLeaderboard() {
+function roundedRectPath(x, y, w, h, r) {
+  const radius = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + w, y, x + w, y + h, radius);
+  ctx.arcTo(x + w, y + h, x, y + h, radius);
+  ctx.arcTo(x, y + h, x, y, radius);
+  ctx.arcTo(x, y, x + w, y, radius);
+  ctx.closePath();
+}
+
+function drawIOSSquare(x, y, size, fillColor, strokeColor, alpha = 1, radius = 6) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = fillColor;
+  ctx.fillRect(x, y, size, size);
+  ctx.lineWidth = Math.max(1.2, size * 0.08);
+  ctx.strokeStyle = strokeColor;
+  ctx.strokeRect(x + 0.5, y + 0.5, size - 1, size - 1);
+  ctx.restore();
+}
+
+function regularPolygonPath(cx, cy, radius, sides, rotation = -Math.PI / 2) {
+  ctx.beginPath();
+  for (let i = 0; i < sides; i += 1) {
+    const angle = rotation + (i * Math.PI * 2) / sides;
+    const px = cx + Math.cos(angle) * radius;
+    const py = cy + Math.sin(angle) * radius;
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+}
+
+function drawPlayerShape(x, y, size, fillColor, strokeColor, shape) {
+  if (state.dogMode) {
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `700 ${Math.floor(size * 0.9)}px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif`;
+    ctx.fillText("🐶", x + size / 2, y + size / 2 + 1);
+    ctx.restore();
+    return;
+  }
+
+  if (shape === "square") {
+    drawIOSSquare(x, y, size, fillColor, strokeColor, 1, 8);
+    return;
+  }
+
+  const cx = x + size / 2;
+  const cy = y + size / 2;
+  const radius = size * 0.48;
+
+  ctx.save();
+  ctx.fillStyle = fillColor;
+  ctx.strokeStyle = strokeColor;
+  ctx.lineWidth = 2;
+
+  if (shape === "circle") {
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.closePath();
+  } else if (shape === "triangle") {
+    regularPolygonPath(cx, cy, radius, 3, -Math.PI / 2);
+  } else if (shape === "diamond") {
+    regularPolygonPath(cx, cy, radius, 4, 0);
+  } else {
+    regularPolygonPath(cx, cy, radius, 5, -Math.PI / 2);
+  }
+
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function openModal(modalEl) {
+  if (!modalEl) return;
+  modalEl.classList.remove("hidden");
+  requestAnimationFrame(() => modalEl.classList.add("open"));
+}
+
+function closeModal(modalEl) {
+  if (!modalEl) return;
+  modalEl.classList.remove("open");
+  window.setTimeout(() => {
+    if (!modalEl.classList.contains("open")) modalEl.classList.add("hidden");
+  }, MODAL_TRANSITION_MS);
+}
+
+function renderLeaderboard(typed = false) {
   if (!leaderboardListEl) return;
   leaderboardListEl.innerHTML = "";
-  for (const entry of LEADERBOARD_ENTRIES.slice(0, 5)) {
-    const li = document.createElement("li");
-    li.textContent = `${entry.name} - ${entry.point} - ${entry.completionLevels}`;
-    leaderboardListEl.appendChild(li);
+  const entries = LEADERBOARD_ENTRIES.slice(0, 5);
+  if (!typed) {
+    for (let i = 0; i < entries.length; i += 1) {
+      const entry = entries[i];
+      const li = document.createElement("li");
+      li.className = `podium-item rank-${i + 1}`;
+      const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎯";
+      li.innerHTML = `<div class="podium-rank">${medal} #${i + 1}</div><div class="podium-text"></div>`;
+      li.querySelector(".podium-text").textContent = `${entry.name} - ${entry.point} - ${entry.completionLevels}`;
+      leaderboardListEl.appendChild(li);
+    }
+    return;
   }
+
+  state.leaderboardTypingRun += 1;
+  const runId = state.leaderboardTypingRun;
+  let idx = 0;
+
+  const typeEntry = () => {
+    if (runId !== state.leaderboardTypingRun) return;
+    if (idx >= entries.length) return;
+    const entry = entries[idx];
+    const text = `${entry.name} - ${entry.point} - ${entry.completionLevels}`;
+    const li = document.createElement("li");
+    li.className = `podium-item rank-${idx + 1}`;
+    const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "🎯";
+    li.innerHTML = `<div class="podium-rank">${medal} #${idx + 1}</div><div class="podium-text"></div>`;
+    leaderboardListEl.appendChild(li);
+    const textEl = li.querySelector(".podium-text");
+
+    let charIndex = 0;
+    const typeChar = () => {
+      if (runId !== state.leaderboardTypingRun) return;
+      charIndex += 1;
+      textEl.textContent = text.slice(0, charIndex);
+      if (charIndex < text.length) {
+        window.setTimeout(typeChar, 11);
+        return;
+      }
+      idx += 1;
+      window.setTimeout(typeEntry, 90);
+    };
+    typeChar();
+  };
+  typeEntry();
+}
+
+function playLeaderboardConfetti() {
+  // Leaderboard confetti disabled by request.
 }
 
 function openLeaderboardModal() {
   if (!leaderboardModal) return;
-  renderLeaderboard();
-  leaderboardModal.classList.remove("hidden");
+  renderLeaderboard(true);
+  openModal(leaderboardModal);
 }
 
 function closeLeaderboardModal() {
   if (!leaderboardModal) return;
-  leaderboardModal.classList.add("hidden");
-}
-
-function renderThanksList() {
-  if (!thanksListEl) return;
-  thanksListEl.innerHTML = "";
-  const names = THANK_YOU_NAMES.length > 0 ? THANK_YOU_NAMES : ["Thank you for playing!"];
-  for (let i = 0; i < 2; i += 1) {
-    for (const name of names) {
-      const li = document.createElement("li");
-      li.textContent = name;
-      thanksListEl.appendChild(li);
-    }
+  state.leaderboardTypingRun += 1;
+  if (state.leaderboardConfettiRaf) {
+    window.cancelAnimationFrame(state.leaderboardConfettiRaf);
+    state.leaderboardConfettiRaf = null;
   }
-}
-
-function openThanksModal() {
-  if (!thanksModal) return;
-  renderThanksList();
-  thanksModal.classList.remove("hidden");
-}
-
-function closeThanksModal() {
-  if (!thanksModal) return;
-  thanksModal.classList.add("hidden");
+  if (state.leaderboardConfettiStopTimeout) {
+    window.clearTimeout(state.leaderboardConfettiStopTimeout);
+    state.leaderboardConfettiStopTimeout = null;
+  }
+  if (state.leaderboardConfettiCanvas) {
+    state.leaderboardConfettiCanvas.remove();
+    state.leaderboardConfettiCanvas = null;
+  }
+  closeModal(leaderboardModal);
 }
 
 function getScriptedPatternAtTime(cfg, time) {
@@ -340,33 +847,33 @@ function getLevelInfo(levelKey) {
   const duration = getLevelDurationText(levelKey);
   if (levelKey === "spaghetti") {
     return {
-      title: "Level 1 - MiniSkirt",
-      summary: `Survive for ${duration}.`,
+      title: t("level1Title"),
+      summary: t("surviveFor", { duration }),
       bullets: [
-        "Obstacle flow: top to bottom.",
-        "BLIND events: yes (with 3-second warning).",
-        "BLIND duration shrinks as speed increases.",
+        t("level1Bullet1"),
+        t("level1Bullet2"),
+        t("level1Bullet3"),
       ],
     };
   }
   if (levelKey === "chu") {
     return {
-      title: "Level 2 - Chu",
-      summary: `Survive for ${duration}.`,
+      title: t("level2Title"),
+      summary: t("surviveFor", { duration }),
       bullets: [
-        "Obstacle flow starts left-to-right only.",
-        "Random REVERSE events switch direction to right-to-left (and back).",
-        "Timed COLOR REVERSE windows with a 0.5-second warning.",
+        t("level2Bullet1"),
+        t("level2Bullet2"),
+        t("level2Bullet3"),
       ],
     };
   }
   return {
-    title: "Level 3 - RUDE!",
-    summary: `Survive for ${duration}.`,
+    title: t("level3Title"),
+    summary: t("surviveFor", { duration }),
     bullets: [
-      "No BLIND and no REVERSE.",
-      "Direction phases switch over time, with 3-second switch warnings.",
-      "No BLANK and no half-screen effects.",
+      t("level3Bullet1"),
+      t("level3Bullet2"),
+      t("level3Bullet3"),
     ],
   };
 }
@@ -383,7 +890,7 @@ function showLevelInfoModal(levelKey) {
     li.textContent = bullet;
     levelInfoListEl.appendChild(li);
   }
-  blindInfoModal.classList.remove("hidden");
+  openModal(blindInfoModal);
 }
 
 function maybeShowLevelInfoModal(levelKey) {
@@ -393,7 +900,8 @@ function maybeShowLevelInfoModal(levelKey) {
 }
 
 function todayString() {
-  return new Date().toLocaleDateString("en-US", {
+  const locale = state.lang === "zh" ? "zh-CN" : "en-US";
+  return new Date().toLocaleDateString(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -527,25 +1035,6 @@ function isReverseFlashActive() {
   return getLevel().eventMode === "reverse" && state.running && !state.paused && state.time < state.reverseFlashUntil;
 }
 
-function getLevel2ColorSwapWarning() {
-  const cfg = getLevel();
-  if (cfg.key !== "chu") return null;
-  for (const [start] of cfg.colorSwapWindows || []) {
-    const until = start - state.time;
-    if (until > 0 && until <= cfg.colorSwapWarning) return until;
-  }
-  return null;
-}
-
-function isLevel2ColorSwapActive() {
-  const cfg = getLevel();
-  if (cfg.key !== "chu") return false;
-  for (const [start, end] of cfg.colorSwapWindows || []) {
-    if (state.time >= start && state.time < end) return true;
-  }
-  return false;
-}
-
 function updateTopAlert() {
   if (!blindTopEl) return;
 
@@ -556,7 +1045,7 @@ function updateTopAlert() {
   }
 
   if (state.invincible) {
-    blindTopEl.textContent = "INVINCIBLE";
+    blindTopEl.textContent = t("invincible");
     blindTopEl.classList.add("show");
     return;
   }
@@ -571,7 +1060,7 @@ function updateTopAlert() {
         const nextSwitchAt = Math.min(...boundaries);
         const untilSwitch = nextSwitchAt - state.time;
         if (untilSwitch <= WARNING_SECONDS) {
-          blindTopEl.textContent = `SWITCHING IN ${Math.max(0, untilSwitch).toFixed(1)}s`;
+          blindTopEl.textContent = t("switchingIn", { value: Math.max(0, untilSwitch).toFixed(1) });
           blindTopEl.classList.add("show");
         }
       }
@@ -579,42 +1068,28 @@ function updateTopAlert() {
     return;
   }
 
-  if (cfg.key === "chu") {
-    if (isLevel2ColorSwapActive()) {
-      blindTopEl.textContent = "COLOR REVERSE";
-      blindTopEl.classList.add("show");
-      return;
-    }
-    const colorSwapWarning = getLevel2ColorSwapWarning();
-    if (colorSwapWarning !== null) {
-      blindTopEl.textContent = `COLOR REVERSE IN ${colorSwapWarning.toFixed(1)}s`;
-      blindTopEl.classList.add("show");
-      return;
-    }
-  }
-
   if (cfg.eventMode === "blind") {
     if (isBlindActive()) {
-      blindTopEl.textContent = "BLIND";
+      blindTopEl.textContent = t("blind");
       blindTopEl.classList.add("show");
       return;
     }
     const untilEvent = state.nextEventAt - state.time;
     if (untilEvent <= WARNING_SECONDS) {
-      blindTopEl.textContent = `BLIND IN ${untilEvent.toFixed(1)}s`;
+      blindTopEl.textContent = t("blindIn", { value: untilEvent.toFixed(1) });
       blindTopEl.classList.add("show");
     }
     return;
   }
 
   if (isReverseFlashActive()) {
-    blindTopEl.textContent = "REVERSE!";
+    blindTopEl.textContent = t("reverseNow");
     blindTopEl.classList.add("show");
     return;
   }
   const untilEvent = state.nextEventAt - state.time;
   if (untilEvent <= WARNING_SECONDS) {
-    blindTopEl.textContent = `REVERSE IN ${untilEvent.toFixed(1)}s`;
+    blindTopEl.textContent = t("reverseIn", { value: untilEvent.toFixed(1) });
     blindTopEl.classList.add("show");
   }
 }
@@ -675,17 +1150,20 @@ function resetGame() {
   state.recordShownThisRun = false;
   state.recordConfettiUntil = -1;
   state.recordConfetti = [];
+  state.pauseTypedStartMs = 0;
+  state.gameOverTypedStartMs = 0;
   state.hazards.length = 0;
   state.player.x = canvas.width / 2 - state.player.w / 2;
   state.player.y = canvas.height - 90;
 
-  if (pauseBtn) pauseBtn.textContent = "Pause";
+  setPauseButtonLabel();
 
   prepareAudio();
   startAudio();
   startBackgroundVideo();
 
   scheduleNextEvent(0);
+  pushCodeLog("game.start()", `song=${getLevel().songLabel}`);
   updateReviveDisplay();
   updateScoreDisplay();
   updateTopAlert();
@@ -762,6 +1240,7 @@ function handleGameOver() {
   state.won = false;
   state.showcaseWin = false;
   state.awaitingRevive = false;
+  state.gameOverTypedStartMs = performance.now();
 
   if (state.score > state.best) {
     state.best = state.score;
@@ -781,6 +1260,7 @@ function triggerCollisionGameOver() {
   state.won = false;
   state.showcaseWin = false;
   state.awaitingRevive = state.revivesUsed < state.maxRevives;
+  state.gameOverTypedStartMs = performance.now();
   if (state.audio) state.audio.pause();
   stopBackgroundVideo();
   updateTopAlert();
@@ -795,10 +1275,12 @@ function reviveFromGameOver() {
   state.over = false;
   state.running = true;
   state.paused = false;
+  state.gameOverTypedStartMs = 0;
   state.invulnerableUntil = state.time + 1;
   state.hazards.length = 0;
+  pushCodeLog("player.revive()", `used=${state.revivesUsed}/${state.maxRevives}`);
 
-  if (pauseBtn) pauseBtn.textContent = "Pause";
+  setPauseButtonLabel();
   updateReviveDisplay();
   updateHudMode();
   if (state.audio) state.audio.play().catch(() => {});
@@ -867,6 +1349,7 @@ function handleWin() {
   }
 
   initConfetti();
+  state.winConfettiUntilMs = performance.now() + 10000;
   updateScoreDisplay();
   updateTopAlert();
   updateRecordBadge();
@@ -881,6 +1364,7 @@ function enterShowcaseWin() {
   state.showcaseWin = true;
   state.awaitingRevive = false;
   initConfetti();
+  state.winConfettiUntilMs = performance.now() + 10000;
   if (state.audio) state.audio.pause();
   stopBackgroundVideo();
   updateTopAlert();
@@ -1030,10 +1514,66 @@ function update(dt) {
 }
 
 function drawWinScreen() {
+  const drawWinConfetti = performance.now() < state.winConfettiUntilMs;
   if (getLevel().key === "chu") {
     ctx.fillStyle = "#f7f7f7";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    if (drawWinConfetti) {
+      for (const c of state.confetti) {
+        c.x += c.vx;
+        c.y += c.vy;
+        c.spin += c.spinRate;
+
+        if (c.y > canvas.height + 20) {
+          c.y = -20 - Math.random() * 60;
+          c.x = Math.random() * canvas.width;
+        }
+        if (c.x < -20) c.x = canvas.width + 20;
+        if (c.x > canvas.width + 20) c.x = -20;
+
+        const shine = 0.35 + Math.abs(Math.sin(c.spin)) * c.shine;
+        ctx.globalAlpha = shine;
+        ctx.fillStyle = c.color;
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.rotate(c.spin);
+        ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.65);
+        ctx.restore();
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const cfgWin = getLevel();
+
+    ctx.fillStyle = "#101010";
+    ctx.textAlign = "center";
+    ctx.font = "700 56px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.fillText(t("youWin"), canvas.width / 2, canvas.height / 2 - 72);
+
+    ctx.font = "700 20px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.fillText(t("accomplished"), canvas.width / 2, canvas.height / 2 - 24);
+
+    ctx.font = "700 24px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.fillText(cfgWin.songLabel, canvas.width / 2, canvas.height / 2 + 14);
+
+    ctx.font = "700 18px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.fillText(t("firstPlayer", { date: todayString() }), canvas.width / 2, canvas.height / 2 + 52);
+
+    ctx.font = "700 18px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.fillText(t("revivesUsed", { used: state.revivesUsed, max: state.maxRevives }), canvas.width / 2, canvas.height / 2 + 82);
+    ctx.font = "600 14px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.fillText(t("secretComboHint"), canvas.width / 2, canvas.height / 2 + 110);
+    return;
+  }
+
+  ctx.fillStyle = "#0a0a0a";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (drawWinConfetti) {
     for (const c of state.confetti) {
       c.x += c.vx;
       c.y += c.vy;
@@ -1055,55 +1595,6 @@ function drawWinScreen() {
       ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.65);
       ctx.restore();
     }
-    ctx.globalAlpha = 1;
-
-    ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const cfgWin = getLevel();
-
-    ctx.fillStyle = "#101010";
-    ctx.textAlign = "center";
-    ctx.font = "700 56px Courier New";
-    ctx.fillText("YOU WIN", canvas.width / 2, canvas.height / 2 - 72);
-
-    ctx.font = "700 20px Courier New";
-    ctx.fillText("you've accomplished", canvas.width / 2, canvas.height / 2 - 24);
-
-    ctx.font = "700 24px Courier New";
-    ctx.fillText(cfgWin.songLabel, canvas.width / 2, canvas.height / 2 + 14);
-
-    ctx.font = "700 18px Courier New";
-    ctx.fillText(`${todayString()} - First Player to Complete`, canvas.width / 2, canvas.height / 2 + 52);
-
-    ctx.font = "700 18px Courier New";
-    ctx.fillText(`Revivals used: ${state.revivesUsed} / ${state.maxRevives}`, canvas.width / 2, canvas.height / 2 + 82);
-    return;
-  }
-
-  ctx.fillStyle = "#0a0a0a";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  for (const c of state.confetti) {
-    c.x += c.vx;
-    c.y += c.vy;
-    c.spin += c.spinRate;
-
-    if (c.y > canvas.height + 20) {
-      c.y = -20 - Math.random() * 60;
-      c.x = Math.random() * canvas.width;
-    }
-    if (c.x < -20) c.x = canvas.width + 20;
-    if (c.x > canvas.width + 20) c.x = -20;
-
-    const shine = 0.35 + Math.abs(Math.sin(c.spin)) * c.shine;
-    ctx.globalAlpha = shine;
-    ctx.fillStyle = c.color;
-    ctx.save();
-    ctx.translate(c.x, c.y);
-    ctx.rotate(c.spin);
-    ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.65);
-    ctx.restore();
   }
   ctx.globalAlpha = 1;
 
@@ -1114,20 +1605,22 @@ function drawWinScreen() {
 
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";
-  ctx.font = "700 56px Courier New";
-  ctx.fillText("YOU WIN", canvas.width / 2, canvas.height / 2 - 72);
+  ctx.font = "700 56px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.fillText(t("youWin"), canvas.width / 2, canvas.height / 2 - 72);
 
-  ctx.font = "700 20px Courier New";
-  ctx.fillText("you've accomplished", canvas.width / 2, canvas.height / 2 - 24);
+  ctx.font = "700 20px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.fillText(t("accomplished"), canvas.width / 2, canvas.height / 2 - 24);
 
-  ctx.font = "700 24px Courier New";
+  ctx.font = "700 24px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
   ctx.fillText(cfgWin.songLabel, canvas.width / 2, canvas.height / 2 + 14);
 
-  ctx.font = "700 18px Courier New";
-  ctx.fillText(`${todayString()} - First Player to Complete`, canvas.width / 2, canvas.height / 2 + 52);
+  ctx.font = "700 18px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.fillText(t("firstPlayer", { date: todayString() }), canvas.width / 2, canvas.height / 2 + 52);
 
-  ctx.font = "700 18px Courier New";
-  ctx.fillText(`Revivals used: ${state.revivesUsed} / ${state.maxRevives}`, canvas.width / 2, canvas.height / 2 + 82);
+  ctx.font = "700 18px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.fillText(t("revivesUsed", { used: state.revivesUsed, max: state.maxRevives }), canvas.width / 2, canvas.height / 2 + 82);
+  ctx.font = "600 14px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.fillText(t("secretComboHint"), canvas.width / 2, canvas.height / 2 + 110);
 }
 
 function draw() {
@@ -1144,52 +1637,49 @@ function draw() {
   }
 
   drawRecordConfetti();
-  const level2ColorSwap = cfg.key === "chu" && isLevel2ColorSwapActive();
   const playerBaseFill = getPlayerFillColor();
+  const obstacleBaseColor = state.level3ObstacleColor || (cfg.key === "chu" ? "#000000" : "#ffffff");
+  const obstacleBaseFrame = state.level3ObstacleFrame || (cfg.key === "chu" ? "#2d2d2d" : "#ff69b4");
 
   for (const h of state.hazards) {
-    if (cfg.key === "chu" && level2ColorSwap) {
-      ctx.fillStyle = withAlpha(playerBaseFill, h.alpha);
-    } else if (cfg.key === "rude" && state.level3ObstacleColor) {
-      ctx.fillStyle = withAlpha(state.level3ObstacleColor, h.alpha);
-    } else {
-      ctx.fillStyle = cfg.hazardColor.replace("ALPHA", String(h.alpha));
-    }
-    ctx.fillRect(h.x, h.y, h.size, h.size);
-    if (cfg.key === "rude") {
-      const frame = state.level3ObstacleFrame ? withAlpha(state.level3ObstacleFrame, 0.95) : "rgba(255, 105, 180, 0.95)";
-      ctx.strokeStyle = frame;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(h.x, h.y, h.size, h.size);
-    }
+    const hazardFill = withAlpha(obstacleBaseColor, h.alpha);
+    const hazardStroke = withAlpha(obstacleBaseFrame, 0.95);
+    drawIOSSquare(h.x, h.y, h.size, hazardFill, hazardStroke, 1, Math.max(5, h.size * 0.18));
   }
 
-  const playerFill = level2ColorSwap ? "#000000" : playerBaseFill;
-  const playerStroke = level2ColorSwap ? "#f2f2f2" : getPlayerStrokeColor(playerFill);
-  ctx.fillStyle = playerFill;
-  ctx.fillRect(state.player.x, state.player.y, state.player.w, state.player.h);
-  ctx.strokeStyle = playerStroke;
-  ctx.lineWidth = 2;
-  ctx.strokeRect(state.player.x, state.player.y, state.player.w, state.player.h);
+  const playerFill = playerBaseFill;
+  const playerStroke = state.playerFrameColor || getPlayerStrokeColor(playerFill);
+  drawPlayerShape(state.player.x, state.player.y, state.player.w, playerFill, playerStroke, state.playerShape);
 
   if (isBlindActive()) {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#000000";
     ctx.textAlign = "center";
-    ctx.font = "700 58px Courier New";
-    ctx.fillText("BLIND", canvas.width / 2, canvas.height / 2);
+    ctx.font = "700 58px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.fillText(t("blind"), canvas.width / 2, canvas.height / 2);
   }
 
   if (state.running && state.paused) {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.74)";
+    ctx.fillStyle = "rgba(8, 8, 10, 0.56)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#f2f2f2";
     ctx.textAlign = "center";
-    ctx.font = "700 40px Courier New";
-    ctx.fillText("Paused", canvas.width / 2, canvas.height / 2 - 24);
-    ctx.font = "500 20px Courier New";
-    ctx.fillText("Press Space to continue", canvas.width / 2, canvas.height / 2 + 16);
+    drawTypedCenteredLine(
+      t("paused"),
+      canvas.height / 2 - 24,
+      getPauseGameOverColor(cfg.key),
+      "700 28px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      state.pauseTypedStartMs,
+      0
+    );
+    drawTypedCenteredLine(
+      t("pressSpaceContinue"),
+      canvas.height / 2 + 16,
+      getPauseGameOverColor(cfg.key),
+      "500 22px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      state.pauseTypedStartMs,
+      t("paused").length * OVERLAY_TYPE_MS_PER_CHAR + 220
+    );
   }
 
   if (state.won) {
@@ -1205,18 +1695,52 @@ function draw() {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
     if (!state.over) {
-      ctx.fillStyle = cfg.key === "chu" ? "#000000" : "#f2f2f2";
-      ctx.font = "700 40px Courier New";
-      ctx.fillText("Dogdge, press to start", canvas.width / 2, canvas.height / 2);
+      ctx.fillStyle = getPromptColor(cfg.key);
+      ctx.font = "700 28px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+      const baseX = canvas.width / 2 + (cfg.key === "rude" ? LEVEL3_START_PROMPT_OFFSET_X : 0);
+      const baseY = canvas.height / 2 + (cfg.key === "rude" ? LEVEL3_START_PROMPT_OFFSET_Y : 0);
+      if (cfg.key === "rude") {
+        const word = "RUDE";
+        const fullWidth = ctx.measureText(`${word}!`).width;
+        const startX = baseX - fullWidth / 2;
+        ctx.textAlign = "left";
+        ctx.fillText(word, startX, baseY);
+        if (Math.floor(performance.now() / 420) % 2 === 0) {
+          const exX = startX + ctx.measureText(word).width;
+          ctx.fillText("!", exX, baseY);
+        }
+      } else {
+        const fullText = state.startPromptTarget || t("pressToStart");
+        const shownText = state.startPromptDisplay || "";
+        const fullWidth = ctx.measureText(fullText).width;
+        const startX = baseX - fullWidth / 2;
+        const y = baseY;
+        ctx.textAlign = "left";
+        ctx.fillText(shownText, startX, y);
+
+        if (Math.floor(performance.now() / 420) % 2 === 0) {
+          const cursorX = startX + ctx.measureText(shownText).width;
+          ctx.fillText(" _", cursorX, y);
+        }
+      }
     } else {
-      ctx.fillStyle = "#f2f2f2";
-      ctx.font = "700 40px Courier New";
-      ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2 - 24);
-      ctx.font = "500 20px Courier New";
-      const sub = state.awaitingRevive
-        ? "Press Start to restart or C to revive"
-        : "Press Start to try again";
-      ctx.fillText(sub, canvas.width / 2, canvas.height / 2 + 16);
+      const sub = state.awaitingRevive ? t("gameOverWithRevive") : t("gameOverNoRevive");
+      drawTypedCenteredLine(
+        t("gameOver"),
+        canvas.height / 2 - 24,
+        getPauseGameOverColor(cfg.key),
+        "700 28px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        state.gameOverTypedStartMs,
+        0
+      );
+      drawTypedCenteredLine(
+        sub,
+        canvas.height / 2 + 16,
+        getPauseGameOverColor(cfg.key),
+        "500 22px 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        state.gameOverTypedStartMs,
+        t("gameOver").length * OVERLAY_TYPE_MS_PER_CHAR + 220
+      );
     }
   }
 }
@@ -1226,6 +1750,7 @@ function loop(now) {
   const dt = Math.min(0.033, (now - last) / 1000);
   last = now;
   update(dt);
+  updateStartPromptTyping(dt);
   draw();
   requestAnimationFrame(loop);
 }
@@ -1239,6 +1764,8 @@ function returnToHome() {
   state.won = false;
   state.showcaseWin = false;
   state.awaitingRevive = false;
+  state.pauseTypedStartMs = 0;
+  state.gameOverTypedStartMs = 0;
   state.time = 0;
   state.spawnTimer = 0;
   state.eventsTriggered = 0;
@@ -1246,7 +1773,8 @@ function returnToHome() {
   state.keys.clear();
   state.player.x = canvas.width / 2 - state.player.w / 2;
   state.player.y = canvas.height - 90;
-  if (pauseBtn) pauseBtn.textContent = "Pause";
+  pushCodeLog("game.home()", "state=idle");
+  setPauseButtonLabel();
   prepareAudio();
   updateScoreDisplay();
   updateTopAlert();
@@ -1257,6 +1785,8 @@ function returnToHome() {
 function togglePause() {
   if (!state.running || state.over || state.won) return;
   state.paused = !state.paused;
+  if (state.paused) state.pauseTypedStartMs = performance.now();
+  else state.pauseTypedStartMs = 0;
   if (state.paused) state.keys.clear();
   if (state.audio) {
     if (state.paused) state.audio.pause();
@@ -1266,7 +1796,8 @@ function togglePause() {
     if (state.paused) state.bgVideo.pause();
     else state.bgVideo.play().catch(() => {});
   }
-  if (pauseBtn) pauseBtn.textContent = state.paused ? "Resume" : "Pause";
+  setPauseButtonLabel();
+  pushCodeLog(`game.${state.paused ? "pause" : "resume"}()`);
   updateTopAlert();
   updateHudMode();
 }
@@ -1305,15 +1836,29 @@ function jumpToRudeMix() {
 }
 
 window.addEventListener("keydown", (e) => {
+  if (!state.running && !state.over && !state.won && e.shiftKey && e.key.length === 1 && /[a-z]/i.test(e.key)) {
+    const now = performance.now();
+    if (now - state.dogComboLastAt > 1600) state.dogComboBuffer = "";
+    state.dogComboLastAt = now;
+    state.dogComboBuffer = (state.dogComboBuffer + e.key.toLowerCase()).slice(-6);
+    if (state.dogComboBuffer.endsWith("dog")) {
+      state.dogMode = true;
+      pushCodeLog("player.mode = \"dog\" 🐶", "shift + d o g");
+      state.dogComboBuffer = "";
+    }
+  }
+
   if (e.ctrlKey && e.shiftKey && (e.key === "v" || e.key === "V")) {
     e.preventDefault();
     state.invincible = !state.invincible;
+    pushCodeLog(`player.invincible = ${state.invincible}`);
     updateTopAlert();
     return;
   }
 
   if (e.ctrlKey && e.shiftKey && (e.key === "m" || e.key === "M")) {
     e.preventDefault();
+    pushCodeLog("debug.jump('rude:mix')");
     jumpToRudeMix();
     return;
   }
@@ -1326,6 +1871,7 @@ window.addEventListener("keydown", (e) => {
 
   if (e.ctrlKey && e.shiftKey && (e.key === "h" || e.key === "H")) {
     e.preventDefault();
+    pushCodeLog("debug.showcaseWin()");
     enterShowcaseWin();
     return;
   }
@@ -1366,6 +1912,8 @@ if (levelSelect) {
   levelSelect.addEventListener("change", () => {
     if (!LEVELS[levelSelect.value]) return;
     state.level = levelSelect.value;
+    resetStartPromptTyping();
+    pushCodeLog(`game.level = "${state.level}"`);
     maybeShowLevelInfoModal(state.level);
     if (state.level === "rude") ensureBackgroundVideo();
     else stopBackgroundVideo(true);
@@ -1389,9 +1937,27 @@ if (levelSelect) {
   });
 }
 
+if (langSelect) {
+  langSelect.value = state.lang;
+  langSelect.addEventListener("change", () => {
+    const next = langSelect.value;
+    state.lang = LANGUAGES.includes(next) ? next : "en";
+    pushCodeLog(`ui.lang = "${state.lang}"`);
+    document.documentElement.lang = state.lang;
+    applyLanguage();
+    updateTopAlert();
+    if (blindInfoModal && !blindInfoModal.classList.contains("hidden")) {
+      showLevelInfoModal(state.level);
+    }
+  });
+}
+
 if (playerColorPicker) {
   playerColorPicker.addEventListener("input", () => {
     state.playerColor = playerColorPicker.value;
+  });
+  playerColorPicker.addEventListener("change", () => {
+    pushCodeLog(`theme.player.fill = "${playerColorPicker.value}"`, "repaint(player)");
   });
 }
 
@@ -1399,17 +1965,34 @@ if (playerFramePicker) {
   playerFramePicker.addEventListener("input", () => {
     state.playerFrameColor = playerFramePicker.value;
   });
+  playerFramePicker.addEventListener("change", () => {
+    pushCodeLog(`theme.player.stroke = "${playerFramePicker.value}"`, "repaint(player)");
+  });
+}
+
+if (playerShapeSelect) {
+  playerShapeSelect.addEventListener("change", () => {
+    state.playerShape = playerShapeSelect.value;
+    state.dogMode = false;
+    pushCodeLog(`theme.player.shape = "${state.playerShape}"`, "repaint(player)");
+  });
 }
 
 if (obstacleColorPicker) {
   obstacleColorPicker.addEventListener("input", () => {
     state.level3ObstacleColor = obstacleColorPicker.value;
   });
+  obstacleColorPicker.addEventListener("change", () => {
+    pushCodeLog(`theme.hazard.fill = "${obstacleColorPicker.value}"`, "repaint(hazards)");
+  });
 }
 
 if (obstacleFramePicker) {
   obstacleFramePicker.addEventListener("input", () => {
     state.level3ObstacleFrame = obstacleFramePicker.value;
+  });
+  obstacleFramePicker.addEventListener("change", () => {
+    pushCodeLog(`theme.hazard.stroke = "${obstacleFramePicker.value}"`, "repaint(hazards)");
   });
 }
 
@@ -1419,14 +2002,6 @@ if (leaderboardBtn) {
 
 if (closeLeaderboardBtn) {
   closeLeaderboardBtn.addEventListener("click", closeLeaderboardModal);
-}
-
-if (thanksBtn) {
-  thanksBtn.addEventListener("click", openThanksModal);
-}
-
-if (closeThanksBtn) {
-  closeThanksBtn.addEventListener("click", closeThanksModal);
 }
 
 // Fallback delegation: keeps leaderboard controls working even with stale cached listeners.
@@ -1441,20 +2016,9 @@ document.addEventListener("click", (e) => {
     closeLeaderboardModal();
     return;
   }
-  if (target.id === "thanksBtn") {
-    openThanksModal();
-    return;
-  }
-  if (target.id === "closeThanksBtn") {
-    closeThanksModal();
-    return;
-  }
   if (target.id === "leaderboardModal") {
     closeLeaderboardModal();
     return;
-  }
-  if (target.id === "thanksModal") {
-    closeThanksModal();
   }
 });
 
@@ -1477,12 +2041,44 @@ if (celebrateBtn) {
       return;
     }
     initConfetti();
+    state.winConfettiUntilMs = performance.now() + 10000;
   });
 }
 
 if (closeModalBtn && blindInfoModal) {
   closeModalBtn.addEventListener("click", () => {
-    blindInfoModal.classList.add("hidden");
+    closeModal(blindInfoModal);
+    if (!state.running && !state.over && !state.won) {
+      window.setTimeout(resetStartPromptTyping, MODAL_TRANSITION_MS);
+    }
+  });
+}
+
+if (hudEl && gameTitleEl) {
+  gameTitleEl.style.cursor = "grab";
+  gameTitleEl.addEventListener("pointerdown", (e) => {
+    if (!(e.target instanceof Element)) return;
+    state.hudDrag.active = true;
+    state.hudDrag.offsetX = e.clientX - hudEl.offsetLeft;
+    state.hudDrag.offsetY = e.clientY - hudEl.offsetTop;
+    gameTitleEl.style.cursor = "grabbing";
+    e.preventDefault();
+  });
+
+  window.addEventListener("pointermove", (e) => {
+    if (!state.hudDrag.active) return;
+    const maxX = Math.max(0, window.innerWidth - hudEl.offsetWidth - 4);
+    const maxY = Math.max(0, window.innerHeight - hudEl.offsetHeight - 4);
+    const nextX = Math.min(maxX, Math.max(4, e.clientX - state.hudDrag.offsetX));
+    const nextY = Math.min(maxY, Math.max(4, e.clientY - state.hudDrag.offsetY));
+    hudEl.style.left = `${nextX}px`;
+    hudEl.style.top = `${nextY}px`;
+  });
+
+  window.addEventListener("pointerup", () => {
+    if (!state.hudDrag.active) return;
+    state.hudDrag.active = false;
+    gameTitleEl.style.cursor = "grab";
   });
 }
 
@@ -1493,6 +2089,11 @@ updateHudMode();
 syncPlayerColorPicker();
 updateLevelScopedControls();
 syncObstaclePickers();
+document.documentElement.lang = state.lang;
+if (langSelect) langSelect.value = state.lang;
+applyLanguage();
+initCodeLog();
+resetStartPromptTyping();
 maybeShowLevelInfoModal(state.level);
 draw();
 requestAnimationFrame(loop);
