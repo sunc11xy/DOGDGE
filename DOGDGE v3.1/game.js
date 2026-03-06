@@ -105,6 +105,18 @@ const LEVELS = {
     eventTargetCount: 10,
     eventGapMin: 14,
     eventGapMax: 28,
+    colorSwapWarning: 0.5,
+    colorSwapWindows: [
+      [11, 12],
+      [53, 54],
+      [64, 65],
+      [100, 101],
+      [108, 109],
+      [165, 166],
+      [173, 174],
+      [184, 185],
+      [189, 190],
+    ],
     playerSpeedMult: 1.2,
     spawnRateMult: 0.84,
     hazardCountMult: 0.82,
@@ -162,6 +174,7 @@ const state = {
   time: 0,
   spawnTimer: 0,
   speedScale: 1,
+  level2Direction: 1,
   eventsTriggered: 0,
   nextEventAt: Infinity,
   blindActiveUntil: -1,
@@ -341,9 +354,9 @@ function getLevelInfo(levelKey) {
       title: "Level 2 - Chu",
       summary: `Survive for ${duration}.`,
       bullets: [
-        "Obstacle flow: horizontal (left/right).",
-        "REVERSE events: yes (with 3-second warning).",
-        "REVERSE flips obstacle directions when triggered.",
+        "Obstacle flow starts left-to-right only.",
+        "Random REVERSE events switch direction to right-to-left (and back).",
+        "Timed COLOR REVERSE windows with a 0.5-second warning.",
       ],
     };
   }
@@ -514,6 +527,25 @@ function isReverseFlashActive() {
   return getLevel().eventMode === "reverse" && state.running && !state.paused && state.time < state.reverseFlashUntil;
 }
 
+function getLevel2ColorSwapWarning() {
+  const cfg = getLevel();
+  if (cfg.key !== "chu") return null;
+  for (const [start] of cfg.colorSwapWindows || []) {
+    const until = start - state.time;
+    if (until > 0 && until <= cfg.colorSwapWarning) return until;
+  }
+  return null;
+}
+
+function isLevel2ColorSwapActive() {
+  const cfg = getLevel();
+  if (cfg.key !== "chu") return false;
+  for (const [start, end] of cfg.colorSwapWindows || []) {
+    if (state.time >= start && state.time < end) return true;
+  }
+  return false;
+}
+
 function updateTopAlert() {
   if (!blindTopEl) return;
 
@@ -546,6 +578,21 @@ function updateTopAlert() {
     }
     return;
   }
+
+  if (cfg.key === "chu") {
+    if (isLevel2ColorSwapActive()) {
+      blindTopEl.textContent = "COLOR REVERSE";
+      blindTopEl.classList.add("show");
+      return;
+    }
+    const colorSwapWarning = getLevel2ColorSwapWarning();
+    if (colorSwapWarning !== null) {
+      blindTopEl.textContent = `COLOR REVERSE IN ${colorSwapWarning.toFixed(1)}s`;
+      blindTopEl.classList.add("show");
+      return;
+    }
+  }
+
   if (cfg.eventMode === "blind") {
     if (isBlindActive()) {
       blindTopEl.textContent = "BLIND";
@@ -619,6 +666,7 @@ function resetGame() {
   state.time = 0;
   state.spawnTimer = 0;
   state.speedScale = 1;
+  state.level2Direction = 1;
   state.eventsTriggered = 0;
   state.nextEventAt = Infinity;
   state.blindActiveUntil = -1;
@@ -692,7 +740,7 @@ function spawnHazard() {
     return;
   }
 
-  const fromLeft = Math.random() < 0.5;
+  const fromLeft = cfg.key === "chu" ? state.level2Direction >= 0 : Math.random() < 0.5;
   const x = fromLeft ? -size : canvas.width + size;
   const y = Math.random() * (canvas.height - size);
   const vx = fromLeft ? speed : -speed;
@@ -848,6 +896,9 @@ function maybeTriggerLevelEvent() {
   if (cfg.eventMode === "blind") {
     state.blindActiveUntil = state.time + getBlindDuration();
   } else {
+    if (cfg.key === "chu") {
+      state.level2Direction *= -1;
+    }
     state.reverseFlashUntil = state.time + cfg.reverseFlash;
     for (const h of state.hazards) {
       h.vx *= -1;
@@ -1093,9 +1144,13 @@ function draw() {
   }
 
   drawRecordConfetti();
+  const level2ColorSwap = cfg.key === "chu" && isLevel2ColorSwapActive();
+  const playerBaseFill = getPlayerFillColor();
 
   for (const h of state.hazards) {
-    if (cfg.key === "rude" && state.level3ObstacleColor) {
+    if (cfg.key === "chu" && level2ColorSwap) {
+      ctx.fillStyle = withAlpha(playerBaseFill, h.alpha);
+    } else if (cfg.key === "rude" && state.level3ObstacleColor) {
       ctx.fillStyle = withAlpha(state.level3ObstacleColor, h.alpha);
     } else {
       ctx.fillStyle = cfg.hazardColor.replace("ALPHA", String(h.alpha));
@@ -1109,8 +1164,8 @@ function draw() {
     }
   }
 
-  const playerFill = getPlayerFillColor();
-  const playerStroke = getPlayerStrokeColor(playerFill);
+  const playerFill = level2ColorSwap ? "#000000" : playerBaseFill;
+  const playerStroke = level2ColorSwap ? "#f2f2f2" : getPlayerStrokeColor(playerFill);
   ctx.fillStyle = playerFill;
   ctx.fillRect(state.player.x, state.player.y, state.player.w, state.player.h);
   ctx.strokeStyle = playerStroke;
