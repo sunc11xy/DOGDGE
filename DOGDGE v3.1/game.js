@@ -100,7 +100,7 @@ const I18N = {
     revives: "Revives",
     codePanelTitle: "Config Console",
     leaderboardBtn: "Leaderboard",
-    changelogBtn: "Changelog",
+    changelogBtn: "Devlog",
     startBtn: "Start / Restart",
     reviveBtn: "Revive",
     pause: "Pause",
@@ -147,7 +147,7 @@ const I18N = {
   },
   zh: {
     gameTitle: "DOG Duh",
-    subtitle: "用 WASD 或方向键移动，尽可能久地生存。",
+    subtitle: "用 WASD 或方向键移动，用最少的复活完成整首歌即可获得更多的积分。",
     level: "关卡",
     language: "语言",
     customize: "自定义",
@@ -215,9 +215,9 @@ const I18N = {
 
 // Leaderboard Adjustment Section (Do not change anything else)
 const LEADERBOARD_ENTRIES = [
-  { name: "Justin SUNCHEN", point: 40, completionLevels: "MiniSkirt-AOA--4/5 Revivals" },
-  { name: "Ryo Shoji", point: 25, completionLevels: "MiniSkirt-AOA--5/5 Revivals" },
-  { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
+  { name: "Justin SUNCHEN", point: 40, completionLevels: "MiniSkirt-AOA-4/5 Revivals" },
+  { name: "Ryo Shoji", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
+  { name: "Susan Jiang", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
   { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
   { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
 ];
