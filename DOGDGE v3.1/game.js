@@ -333,6 +333,12 @@ const state = {
   player: { x: canvas.width / 2 - 16, y: canvas.height - 90, w: 32, h: 32, speed: 290 },
   hazards: [],
   keys: new Set(),
+  touchControl: {
+    active: false,
+    pointerId: null,
+    targetX: 0,
+    targetY: 0,
+  },
   codeLogLines: [],
   codeLogQueue: [],
   codeTyping: false,
@@ -629,6 +635,14 @@ function syncObstaclePickers() {
   if (obstacleFramePicker) {
     obstacleFramePicker.value = state.level3ObstacleFrame || (cfg.key === "chu" ? "#2d2d2d" : "#ff69b4");
   }
+}
+
+function setTouchTargetFromClient(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const x = ((clientX - rect.left) / rect.width) * canvas.width;
+  const y = ((clientY - rect.top) / rect.height) * canvas.height;
+  state.touchControl.targetX = x;
+  state.touchControl.targetY = y;
 }
 
 function roundedRectPath(x, y, w, h, r) {
@@ -1123,6 +1137,8 @@ function resetGame() {
   state.recordConfetti = [];
   state.pauseTypedStartMs = 0;
   state.gameOverTypedStartMs = 0;
+  state.touchControl.active = false;
+  state.touchControl.pointerId = null;
   state.hazards.length = 0;
   state.player.x = canvas.width / 2 - state.player.w / 2;
   state.player.y = canvas.height - 90;
@@ -1212,6 +1228,8 @@ function handleGameOver() {
   state.showcaseWin = false;
   state.awaitingRevive = false;
   state.gameOverTypedStartMs = performance.now();
+  state.touchControl.active = false;
+  state.touchControl.pointerId = null;
 
   if (state.score > state.best) {
     state.best = state.score;
@@ -1232,6 +1250,8 @@ function triggerCollisionGameOver() {
   state.showcaseWin = false;
   state.awaitingRevive = state.revivesUsed < state.maxRevives;
   state.gameOverTypedStartMs = performance.now();
+  state.touchControl.active = false;
+  state.touchControl.pointerId = null;
   if (state.audio) state.audio.pause();
   stopBackgroundVideo();
   updateTopAlert();
@@ -1394,14 +1414,22 @@ function update(dt) {
 
   maybeTriggerLevelEvent();
 
-  const moveX = (state.keys.has("ArrowRight") || state.keys.has("d") ? 1 : 0) -
-    (state.keys.has("ArrowLeft") || state.keys.has("a") ? 1 : 0);
-  const moveY = (state.keys.has("ArrowDown") || state.keys.has("s") ? 1 : 0) -
-    (state.keys.has("ArrowUp") || state.keys.has("w") ? 1 : 0);
+  if (state.touchControl.active) {
+    const targetX = state.touchControl.targetX - state.player.w / 2;
+    const targetY = state.touchControl.targetY - state.player.h / 2;
+    const follow = Math.min(1, dt * 18);
+    state.player.x += (targetX - state.player.x) * follow;
+    state.player.y += (targetY - state.player.y) * follow;
+  } else {
+    const moveX = (state.keys.has("ArrowRight") || state.keys.has("d") ? 1 : 0) -
+      (state.keys.has("ArrowLeft") || state.keys.has("a") ? 1 : 0);
+    const moveY = (state.keys.has("ArrowDown") || state.keys.has("s") ? 1 : 0) -
+      (state.keys.has("ArrowUp") || state.keys.has("w") ? 1 : 0);
 
-  const playerSpeed = state.player.speed * cfg.playerSpeedMult;
-  state.player.x += moveX * playerSpeed * dt;
-  state.player.y += moveY * playerSpeed * dt;
+    const playerSpeed = state.player.speed * cfg.playerSpeedMult;
+    state.player.x += moveX * playerSpeed * dt;
+    state.player.y += moveY * playerSpeed * dt;
+  }
 
   state.player.x = Math.max(0, Math.min(canvas.width - state.player.w, state.player.x));
   state.player.y = Math.max(0, Math.min(canvas.height - state.player.h, state.player.y));
@@ -1736,6 +1764,8 @@ function returnToHome() {
   state.awaitingRevive = false;
   state.pauseTypedStartMs = 0;
   state.gameOverTypedStartMs = 0;
+  state.touchControl.active = false;
+  state.touchControl.pointerId = null;
   state.time = 0;
   state.spawnTimer = 0;
   state.eventsTriggered = 0;
@@ -1995,6 +2025,34 @@ if (hudEl && gameTitleEl) {
     state.hudDrag.active = false;
     gameTitleEl.style.cursor = "grab";
   });
+}
+
+if (canvas) {
+  canvas.addEventListener("pointerdown", (e) => {
+    state.touchControl.active = true;
+    state.touchControl.pointerId = e.pointerId;
+    setTouchTargetFromClient(e.clientX, e.clientY);
+    canvas.setPointerCapture?.(e.pointerId);
+    e.preventDefault();
+  });
+
+  canvas.addEventListener("pointermove", (e) => {
+    if (!state.touchControl.active) return;
+    if (state.touchControl.pointerId !== null && e.pointerId !== state.touchControl.pointerId) return;
+    setTouchTargetFromClient(e.clientX, e.clientY);
+    e.preventDefault();
+  });
+
+  const endTouchControl = (e) => {
+    if (!state.touchControl.active) return;
+    if (state.touchControl.pointerId !== null && e.pointerId !== state.touchControl.pointerId) return;
+    state.touchControl.active = false;
+    state.touchControl.pointerId = null;
+  };
+
+  canvas.addEventListener("pointerup", endTouchControl);
+  canvas.addEventListener("pointercancel", endTouchControl);
+  canvas.addEventListener("pointerleave", endTouchControl);
 }
 
 window.addEventListener("resize", resizeCanvas);
