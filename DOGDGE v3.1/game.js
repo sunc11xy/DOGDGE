@@ -2029,6 +2029,7 @@ if (hudEl && gameTitleEl) {
 
 if (canvas) {
   canvas.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "touch") return;
     state.touchControl.active = true;
     state.touchControl.pointerId = e.pointerId;
     setTouchTargetFromClient(e.clientX, e.clientY);
@@ -2037,6 +2038,7 @@ if (canvas) {
   });
 
   canvas.addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "touch") return;
     if (!state.touchControl.active) return;
     if (state.touchControl.pointerId !== null && e.pointerId !== state.touchControl.pointerId) return;
     setTouchTargetFromClient(e.clientX, e.clientY);
@@ -2044,6 +2046,7 @@ if (canvas) {
   });
 
   const endTouchControl = (e) => {
+    if (e.pointerType !== "touch") return;
     if (!state.touchControl.active) return;
     if (state.touchControl.pointerId !== null && e.pointerId !== state.touchControl.pointerId) return;
     state.touchControl.active = false;
