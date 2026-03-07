@@ -27,6 +27,11 @@ const closeModalBtn = document.getElementById("closeModalBtn");
 const leaderboardModal = document.getElementById("leaderboardModal");
 const closeLeaderboardBtn = document.getElementById("closeLeaderboardBtn");
 const leaderboardListEl = document.getElementById("leaderboardList");
+const invincibleModal = document.getElementById("invincibleModal");
+const invinciblePasswordInput = document.getElementById("invinciblePasswordInput");
+const invincibleSubmitBtn = document.getElementById("invincibleSubmitBtn");
+const invincibleCancelBtn = document.getElementById("invincibleCancelBtn");
+const invincibleError = document.getElementById("invincibleError");
 const levelInfoTitleEl = document.getElementById("levelInfoTitle");
 const levelInfoSummaryEl = document.getElementById("levelInfoSummary");
 const levelInfoListEl = document.getElementById("levelInfoList");
@@ -69,6 +74,7 @@ const LEVEL3_START_PROMPT_OFFSET_Y = 155;
 const OVERLAY_TYPE_MS_PER_CHAR = 42;
 const MODAL_TRANSITION_MS = 220;
 const CODE_LOG_MAX_LINES = 14;
+const INVINCIBLE_HASH = ["384fde36", "36e6e01e0194d2976d8f26410af3e846e573379cb1a09e2f0752d8cc"].join("");
 const LANGUAGES = ["en", "zh"];
 const I18N = {
   en: {
@@ -726,6 +732,38 @@ function closeModal(modalEl) {
   window.setTimeout(() => {
     if (!modalEl.classList.contains("open")) modalEl.classList.add("hidden");
   }, MODAL_TRANSITION_MS);
+}
+
+async function sha256Hex(value) {
+  const encoded = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", encoded);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function openInvincibleModal() {
+  if (!invincibleModal || !invinciblePasswordInput) return;
+  if (invincibleError) invincibleError.hidden = true;
+  invinciblePasswordInput.value = "";
+  openModal(invincibleModal);
+  window.setTimeout(() => invinciblePasswordInput.focus(), 30);
+}
+
+async function submitInvinciblePassword() {
+  if (!invinciblePasswordInput) return;
+  const attempt = invinciblePasswordInput.value || "";
+  const hash = await sha256Hex(attempt);
+  if (hash === INVINCIBLE_HASH) {
+    state.invincible = !state.invincible;
+    pushCodeLog(`player.invincible = ${state.invincible}`);
+    if (invincibleError) invincibleError.hidden = true;
+    closeModal(invincibleModal);
+    updateTopAlert();
+    return;
+  }
+  if (invincibleError) invincibleError.hidden = false;
+  invinciblePasswordInput.select();
 }
 
 function renderLeaderboard(typed = false) {
@@ -1850,9 +1888,7 @@ window.addEventListener("keydown", (e) => {
 
   if (e.ctrlKey && e.shiftKey && (e.key === "v" || e.key === "V")) {
     e.preventDefault();
-    state.invincible = !state.invincible;
-    pushCodeLog(`player.invincible = ${state.invincible}`);
-    updateTopAlert();
+    openInvincibleModal();
     return;
   }
 
@@ -2050,6 +2086,32 @@ if (closeModalBtn && blindInfoModal) {
     closeModal(blindInfoModal);
     if (!state.running && !state.over && !state.won) {
       window.setTimeout(resetStartPromptTyping, MODAL_TRANSITION_MS);
+    }
+  });
+}
+
+if (invincibleSubmitBtn) {
+  invincibleSubmitBtn.addEventListener("click", () => {
+    submitInvinciblePassword();
+  });
+}
+
+if (invincibleCancelBtn && invincibleModal) {
+  invincibleCancelBtn.addEventListener("click", () => {
+    closeModal(invincibleModal);
+  });
+}
+
+if (invinciblePasswordInput) {
+  invinciblePasswordInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitInvinciblePassword();
+      return;
+    }
+    if (e.key === "Escape") {
+      e.preventDefault();
+      if (invincibleModal) closeModal(invincibleModal);
     }
   });
 }

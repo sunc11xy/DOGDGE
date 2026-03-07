@@ -22,6 +22,18 @@
         <button id="closeLeaderboardBtn">Close</button>
       </div>
     </div>
+    <div id="invincibleModal" class="modal hidden">
+      <div class="modal-card">
+        <h2>Invincible Access</h2>
+        <p>Enter password to toggle invincible mode.</p>
+        <input id="invinciblePasswordInput" type="password" autocomplete="off" />
+        <p id="invincibleError" class="invincible-error" hidden>Wrong password.</p>
+        <div class="invincible-actions">
+          <button id="invincibleSubmitBtn">Confirm</button>
+          <button id="invincibleCancelBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
 
     <div id="blindTop" class="top-alert">BLIND IN 3.0s</div>
     <div id="sideScore" class="side-score">0s / 0s</div>
