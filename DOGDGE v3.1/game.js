@@ -215,8 +215,8 @@ const I18N = {
 
 // Leaderboard Adjustment Section (Do not change anything else)
 const LEADERBOARD_ENTRIES = [
-  { name: "Justin SUNCHEN", point: 40, completionLevels: "MiniSkirt-AOA-4/5 Revivals" },
-  { name: "Ryo Shoji", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
+  { name: "Ryo Shoji", point: 65, completionLevels: "MiniSkirt-AOA-3/5 Revivals" },
+  { name: "Justin Sunchen", point: 40, completionLevels: "MiniSkirt-AOA-4/5 Revivals" },
   { name: "Susan Jiang", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
   { name: "Mrinali Casper", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
   { name: "Jessica Lv", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
