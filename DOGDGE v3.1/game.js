@@ -218,8 +218,8 @@ const LEADERBOARD_ENTRIES = [
   { name: "Justin SUNCHEN", point: 40, completionLevels: "MiniSkirt-AOA-4/5 Revivals" },
   { name: "Ryo Shoji", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
   { name: "Susan Jiang", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
-  { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
-  { name: "name", point: 0, completionLevels: "Song - Singer - N/5 Revivals" },
+  { name: "Mrinali Casper", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
+  { name: "Jessica Lv", point: 25, completionLevels: "MiniSkirt-AOA-5/5 Revivals" },
 ];
 
 const LEVELS = {
